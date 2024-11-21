@@ -14,3 +14,6 @@ print(heros)
 
 heros[1:3]=["Doctor Strange"]
 print(heros)
+
+heros.sort()
+print(heros)
