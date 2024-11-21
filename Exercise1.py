@@ -1,0 +1,22 @@
+#monthly expenses
+list=[2200,2350,2600,2130,2190]
+extra=list[1]-list[0]
+print(extra)
+
+#first quarter
+first_quarter= list[0]+list[1]+list[2]
+print(first_quarter)
+
+#exactly 2000
+for i in list:
+    if i==2200:
+        print("Match found")
+    else:
+        print("Searching")
+
+list.insert(5, 1980)
+print(list)
+
+list[3]=list[3]-200
+print(list[3])
+print(list)
