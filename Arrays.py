@@ -1,4 +1,8 @@
-#monthly expenses
+#Arrays
+# 
+# 
+# 
+# #monthly expenses
 list=[2200,2350,2600,2130,2190]
 extra=list[1]-list[0]
 print(extra)
