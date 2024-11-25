@@ -99,3 +99,5 @@ ll.insert_at(0,"figs")
 print("length", ll.get_length())
 
 ll.print()
+
+
