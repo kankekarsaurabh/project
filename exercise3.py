@@ -14,9 +14,9 @@
 # for letter in word:
 #     found=vowel(letter)
 #     count+=1
-#     print(count)
+# #     print(count)
 
-# LESSER OF TWO EVENS: Write a function that returns the lesser of two given numbers
+# q1) LESSER OF TWO EVENS: Write a function that returns the lesser of two given numbers
 # if both numbers are even, but returns the greater if one or both numbers are odd
 
 def lesser(a,b):
@@ -36,3 +36,11 @@ x=int(input("Enter first number"))
 y=int(input("Enter second number"))
 result=lesser(x,y)
 print(result)
+
+#ANIMAL CRACKERS: Write a function takes a two-word string and returns True if both words begin with same letter
+
+def animal():
+
+
+
+a=input("Enter a string")
