@@ -88,12 +88,27 @@
 
 # 4)Given an integer n, return True if n is within 10 of either 100 or 200
 
-def within(a):
-    if 90<=a<=110 or 190<=a<=210:
-        return True
-    else:
-        return False
+# def within(a):
+#     if 90<=a<=110 or 190<=a<=210:
+#         return True
+#     else:
+#         return False
 
-n=int(input("Enter a number"))
-result=within(n)
+# n=int(input("Enter a number"))
+# result=within(n)
+# print(result)
+
+#5)Given a list of ints, return True if the array contains a 3 next to a 3 somewhere.
+
+def three(a):
+   
+    for i in range(len(a)):
+        if a[i] == 3:
+            i+=1
+            if a[i]==3:
+                print(i)
+                return True
+
+array=[1,3,4,5,6,3,4,33,44,33,3,3,44,44]
+result= three(array)
 print(result)
