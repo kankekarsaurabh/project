@@ -118,16 +118,51 @@
 # paper_doll('Hello') --> 'HHHeeellllllooo'
 # paper_doll('Mississippi') --> 'MMMiiissssssiiippppppiii'
 
-def doll(string):
-    multiplier=""
-    add=""
-    for i in string:
-        add=i+i+i
-        multiplier=multiplier+add
-    return multiplier
+# def doll(string):
+#     multiplier=""
+#     add=""
+#     for i in string:
+#         add=i+i+i
+#         multiplier=multiplier+add
+#     return multiplier
 
-s=input("Enter any string")
-result=doll(s)
-print(result)
+# s=input("Enter any string")
+# result=doll(s)
+# print(result)
+
+#7 BLACKJACK: Given three integers between 1 and 11, if their sum is less than or equal to 21, 
+# return their sum. If their sum exceeds 21 and there's an eleven, 
+# reduce the total sum by 10. Finally, if the sum (even after adjustment) exceeds 21, return 'BUST'
+
+# blackjack(5,6,7) --> 18
+# blackjack(9,9,9) --> 'BUST'
+# blackjack(9,9,11) --> 19
 
 
+
+
+def validate(a,b,c):
+    sum=0
+
+    if 1<=a<=11 and 1<=b<=11 and 1<=c<=11:
+        sum=a+b+c
+        if sum<=21:
+            return sum
+        elif sum >21 and (a==11 or b==11 or c==11):
+            sum=sum-10
+            if sum > 21:
+                return "BUST"
+            else:
+                return sum
+        elif sum>21:
+            return "BUST"
+    else:
+         return "Invalid input"
+try:    
+    num1=int(input("first number\n"))
+    num2=int(input("Second Number\n"))
+    num3=int(input("third number\n"))
+    result=validate(num1,num2,num3)
+    print(result)
+except ValueError:
+        print ("Invalid input")
