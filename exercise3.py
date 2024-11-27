@@ -76,14 +76,24 @@
 # The .join() method allows you to join together strings in a list with some connector string. For example, some uses of the .join() method:
 
 
-def yoda(string):
-    z=""
-    for i in range(len(string) -1,-1,-1):
-        z=z +string[i]
-    return z
-        
+# def yoda(string):
+#     z=""
+#     for i in range(len(string) -1,-1,-1):
+#         z=z +string[i]
+#     return z
+# x=input("Enter a string")
+# result=yoda(x)
+# print(result)
 
 
-x=input("Enter a string")
-result=yoda(x)
+# 4)Given an integer n, return True if n is within 10 of either 100 or 200
+
+def within(a):
+    if 90<=a<=110 or 190<=a<=210:
+        return True
+    else:
+        return False
+
+n=int(input("Enter a number"))
+result=within(n)
 print(result)
