@@ -100,15 +100,34 @@
 
 #5)Given a list of ints, return True if the array contains a 3 next to a 3 somewhere.
 
-def three(a):
+# def three(a):
    
-    for i in range(len(a)):
-        if a[i] == 3:
-            i+=1
-            if a[i]==3:
-                print(i)
-                return True
+#     for i in range(len(a)):
+#         if a[i] == 3:
+#             i+=1
+#             if a[i]==3:
+#                 print(i)
+#                 return True
 
-array=[1,3,4,5,6,3,4,33,44,33,3,3,44,44]
-result= three(array)
+# array=[1,3,4,5,6,3,4,33,44,33,3,3,44,44]
+# result= three(array)
+# print(result)
+
+#6)  PAPER DOLL: Given a string, return a string where for every character in the original there are three characters
+
+# paper_doll('Hello') --> 'HHHeeellllllooo'
+# paper_doll('Mississippi') --> 'MMMiiissssssiiippppppiii'
+
+def doll(string):
+    multiplier=""
+    add=""
+    for i in string:
+        add=i+i+i
+        multiplier=multiplier+add
+    return multiplier
+
+s=input("Enter any string")
+result=doll(s)
 print(result)
+
+
