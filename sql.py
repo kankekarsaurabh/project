@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 
+
+#Connection to mysql server
 def connect_to_mysql():
     connection = None  # Initialize connection variable
     try:
@@ -12,7 +14,7 @@ def connect_to_mysql():
             database='colonial' # Replace with your database name
 
         )
-
+#check if the connection is successful
         if connection.is_connected():
             print("Connected to MySQL Workbench!")
             
