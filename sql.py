@@ -30,7 +30,7 @@ def connect_to_mysql():
             
             # Close the cursor
             cursor.close()
-
+    #Error handling
     except Error as e:
         print(f"Error: {e}")
     
