@@ -386,7 +386,20 @@ WHERE
 -- dash (-) between the address and the PostCode. Since the list is for the CEO, you want
 -- the list to be as polished as possible. For instance, avoid NULLs in concatenated output.
 
-select * from customers;
+
+SELECT 
+    CUSTOMERID,
+    CUSTOMERNAME,
+    TRIM(BOTH '-' FROM (
+        CONCAT_WS('-', 
+            COALESCE(ADDRESS1, ''), 
+            COALESCE(ADDRESS2, ''), 
+            COALESCE(TOWN, ''), 
+            COALESCE(POSTCODE, '')
+        )
+    )) AS FULLADDRESS
+FROM 
+    CUSTOMER;
 
 
 -- Question 18
@@ -395,7 +408,21 @@ select * from customers;
 -- time, she wants the make and model output as a single column. She knows that this is
 -- an easy request for you, so she decides to hover near your desk. Write a query to create
 -- this list.
-
+SELECT 
+    CONCAT(m.MakeName, ' ', md.ModelName) AS MakeModel,
+    SUM(sd.SalePrice) AS TotalSalePrice
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model md ON st.ModelID = md.ModelID
+JOIN 
+    make m ON md.MakeID = m.MakeID
+GROUP BY 
+    m.MakeName, md.ModelName
+ORDER BY 
+    TotalSalePrice DESC;
 
 
 
@@ -405,6 +432,14 @@ select * from customers;
 -- products. Create a list. For your list, create a single column showing the model name
 -- with the acronym for the make name in the parentheses.
 
+SELECT 
+    CONCAT(SUBSTRING(m.MakeName, 1, 3), ' (', md.ModelName, ')') AS ModelWithAcronym
+FROM 
+    model md
+JOIN 
+    make m ON md.MakeID = m.MakeID
+ORDER BY 
+    md.ModelName;
 
 
 
@@ -412,6 +447,10 @@ select * from customers;
 -- The finance director wants you to show only the three characters at the right of the
 -- invoice number. Write a query to display this list.
 
+SELECT 
+    RIGHT(InvoiceNumber, 3) AS LastThreeCharacters
+FROM 
+    sales;
 
 
 -- Question 21
@@ -419,20 +458,63 @@ select * from customers;
 -- indicate the country where the vehicles were shipped. Knowing this, the sales director
 -- wants to extract only these characters from the invoice number field in order to analyze
 -- destination countries. Create such a list.
+SELECT 
+    SUBSTRING(InvoiceNumber, 4, 2) AS CountryCode
+FROM 
+    sales;
 
 
 -- Question 22
 -- The sales director has requested a list of sales where the invoice was paid in Euros.
 -- Display this list.
 -- 4
+SELECT *
+FROM sales
+WHERE Currency = 'EUR';
 
 
 -- Question 23
 -- The sales director now wants to see all the cars shipped to France but made in Italy
+SELECT s.StockCode, mo.ModelName, m.MakeName, co.CountryName AS ShippedTo, m.MakeCountry AS MadeIn
+FROM sales sa
+JOIN salesdetails sd ON sa.SalesID = sd.SalesID
+JOIN stock s ON sd.Stockid = s.StockCode
+JOIN model mo ON s.ModelID = mo.ModelID
+JOIN make m ON mo.MakeID = m.MakeID
+JOIN customer c ON sa.CustomerID = c.CustomerID
+JOIN country co ON c.Country = co.CountryISO2
+WHERE co.CountryName = 'France' AND m.MakeCountry = 'ITA';
+
 
 -- Question 24
 -- The sales director wants a “quick list” of all vehicles sold and the destination country.
 -- Generate such a list.
+-- Explanation:
+-- 1. The query lists each vehicle's stock code, model name, make name, and the country it was sold to.
+-- 2. The necessary joins are made to link sales, sales details, stock, model, make, customer, and country.
+-- 3. The result will provide a "quick list" of all vehicles sold along with their destination country.
+
+SELECT 
+    st.StockCode AS VehicleStockCode,
+    m.ModelName AS VehicleModelName,
+    mk.MakeName AS VehicleMakeName,
+    c.CountryName AS DestinationCountry
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+JOIN 
+    stock st ON sd.StockCode = st.StockCode
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+JOIN 
+    customer cu ON s.CustomerID = cu.CustomerID
+JOIN 
+    country c ON cu.Country = c.CountryName
+ORDER BY 
+    s.SaleDate DESC;
 
 -- Question 25
 -- The sales director wants you to make some reports that you send directly from MySQL
@@ -440,11 +522,52 @@ select * from customers;
 -- stock table with a thousands separator and two decimals. Create a report with this
 -- column in the requested format.
 
+SELECT 
+    st.StockCode AS VehicleStockCode,
+    m.ModelName AS VehicleModelName,
+    mk.MakeName AS VehicleMakeName,
+    FORMAT(st.Cost, 2) AS FormattedCost,
+    c.CountryName AS DestinationCountry
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+JOIN 
+    customer cu ON s.CustomerID = cu.CustomerID
+JOIN 
+    country c ON cu.Country = c.CountryName
+ORDER BY 
+    s.SaleDate DESC;
+
+
+
 -- Question 26
 -- The sales director is rushing to a meeting with the CEO. In a rush she requests you to
 -- create a report showing the make, model, and the sale price. The sale price in the report
 -- should include thousands separators, two decimals, and a British pound symbol. Create
 -- this report.
+SELECT 
+    mk.MakeName AS VehicleMake,
+    m.ModelName AS VehicleModel,
+    CONCAT('£', FORMAT(sd.SalePrice, 2)) AS FormattedSalePrice
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+ORDER BY 
+    s.SaleDate DESC;
 
 
 -- Question 27
@@ -452,16 +575,49 @@ select * from customers;
 -- separators and two decimals) to be now in German style —that is with a period as the
 -- thousands separator and a comma as the decimal. Create such a list.
 
+SELECT 
+    mk.MakeName AS VehicleMake,
+    m.ModelName AS VehicleModel,
+    CONCAT('€', REPLACE(FORMAT(sd.SalePrice, 2), ',', '.')) AS GermanStyleSalePrice
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+ORDER BY 
+    s.SaleDate DESC;
+
+
+
 -- Question 28
 -- Suppose the CEO requests a report showing the invoice number and the sale date, but
 -- the sale date needs to be in a specific format —first the day, then the abbreviation for
 -- the month, and finally the year in four figures —in this occurrence. Create this report.
+SELECT 
+    s.InvoiceNumber AS InvoiceNumber,
+    DATE_FORMAT(s.SaleDate, '%d-%b-%Y') AS FormattedSaleDate
+FROM 
+    sales s
+ORDER BY 
+    s.SaleDate DESC;
 
 
 -- Question 29
 -- Suppose the CEO requests the report in the previous question showing the invoice number
 -- and the sale date, but this time the sale date needs to be in the ISO format. Create this
 -- report.
+SELECT 
+    s.InvoiceNumber AS InvoiceNumber,
+    DATE_FORMAT(s.SaleDate, '%Y-%m-%d') AS ISOSaleDate
+FROM 
+    sales s
+ORDER BY 
+    s.SaleDate DESC;
 
 
 -- Question 30
@@ -469,6 +625,13 @@ select * from customers;
 -- question to show the invoice number and the time at which the sale was made. The time
 -- needs to be in hh:mm:ss format showing AM or PM after it. Create this report.
 -- 5
+SELECT 
+    s.InvoiceNumber AS InvoiceNumber,
+    DATE_FORMAT(s.SaleDate, '%h:%i:%s %p') AS SaleTime
+FROM 
+    sales s
+ORDER BY 
+    s.SaleDate DESC;
 
 
 -- Question 31
@@ -477,6 +640,24 @@ select * from customers;
 -- parts cost was greater than the cost of repairs. In your report, the finance director wants
 -- you to flag such costs with an alert. Write a query to generate such a report.
 
+SELECT 
+    st.StockCode AS VehicleStockCode,
+    m.ModelName AS VehicleModelName,
+    mk.MakeName AS VehicleMakeName,
+    st.PartsCost AS PartsCost,
+    st.RepairsCost AS RepairsCost,
+    CASE 
+        WHEN st.PartsCost > st.RepairsCost THEN 'ALERT: Parts Cost > Repairs Cost'
+        ELSE 'OK'
+    END AS CostFlag
+FROM 
+    stock st
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+ORDER BY 
+    st.StockCode;
 
 -- Question 32
 -- The sales director wants some customer feedback. She knows that the sales database has
@@ -484,6 +665,16 @@ select * from customers;
 -- in the comments. All she wants is to display the first 25 characters and then use ellipses
 -- (. . . ) to indicate that the text has been shortened. Write an SQL query to display the
 -- comments in this format.
+SELECT 
+    st.StockCode AS StockCode,
+    CONCAT(LEFT(st.Buyercomments, 25), '...') AS ShortenedComment
+FROM 
+    stock st
+WHERE 
+    st.Buyercomments IS NOT NULL
+ORDER BY 
+    st.StockCode;
+
 
 
 
@@ -493,6 +684,32 @@ select * from customers;
 -- the same time the repair cost is at least twice the parts cost! Flag such records with a
 -- cost alert such as “Warning!”. Other sales need to be flagged as “OK”. Write a SQL
 -- query to generate this report.
+SELECT 
+    st.StockCode AS StockCode,
+    m.ModelName AS VehicleModelName,
+    mk.MakeName AS VehicleMakeName,
+    sd.SalePrice AS SalePrice,
+    st.Cost AS PurchaseCost,
+    st.RepairsCost AS RepairsCost,
+    st.PartsCost AS PartsCost,
+    ROUND(((sd.SalePrice - st.Cost) / st.Cost) * 100, 2) AS ProfitPercentage,
+    CASE 
+        WHEN ((sd.SalePrice - st.Cost) / st.Cost) * 100 < 10 
+             AND st.RepairsCost >= 2 * st.PartsCost THEN 'Warning!'
+        ELSE 'OK'
+    END AS CostAlert
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+ORDER BY 
+    st.StockCode;
 
 
 
@@ -502,6 +719,37 @@ select * from customers;
 -- question, she wants to flag the costs as “Acceptable” if the net margin is greater than
 -- 10 percent, but less than 50 percent of the sale price. Otherwise, flag the cost as “OK”.
 -- Write an SQL query.
+SELECT 
+    st.StockCode AS StockCode,
+    m.ModelName AS VehicleModelName,
+    mk.MakeName AS VehicleMakeName,
+    sd.SalePrice AS SalePrice,
+    st.Cost AS PurchaseCost,
+    st.RepairsCost AS RepairsCost,
+    st.PartsCost AS PartsCost,
+    ROUND(((sd.SalePrice - st.Cost) / st.Cost) * 100, 2) AS ProfitPercentage,
+    CASE 
+        WHEN ((sd.SalePrice - st.Cost) / st.Cost) * 100 < 10 
+             AND st.RepairsCost >= 2 * st.PartsCost THEN 'Warning!'
+        ELSE 'OK'
+    END AS CostAlert,
+    CASE 
+        WHEN ((sd.SalePrice - st.Cost) / sd.SalePrice) * 100 > 10 
+             AND ((sd.SalePrice - st.Cost) / sd.SalePrice) * 100 < 50 THEN 'Acceptable'
+        ELSE 'OK'
+    END AS NetMarginFlag
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model m ON st.ModelID = m.ModelID
+JOIN 
+    make mk ON m.MakeID = mk.MakeID
+ORDER BY 
+    st.StockCode;
 
 
 -- Question 35
@@ -512,6 +760,19 @@ select * from customers;
 -- for the United States, and “Other” for all other regions. Write an SQL query to generate
 -- a report showing the country name and the corresponding currency region.
 
+SELECT 
+    c.CountryName AS CountryName,
+    CASE 
+        WHEN c.CountryName IN ('France', 'Germany', 'Italy', 'Spain', 'Netherlands', 'Portugal', 'Austria', 'Belgium', 'Finland', 'Ireland', 'Luxembourg', 'Greece') THEN 'Eurozone'
+        WHEN c.CountryName = 'United Kingdom' THEN 'Pound Sterling'
+        WHEN c.CountryName = 'United States' THEN 'Dollar'
+        ELSE 'Other'
+    END AS CurrencyRegion
+FROM 
+    country c
+ORDER BY 
+    c.CountryName;
+
 
 -- Question 36
 -- The finance director is overjoyed that you solved his previous conundrum and were able
@@ -521,6 +782,20 @@ select * from customers;
 -- regions: European, American, and British. Create such a report using SQL.
 -- 6
 
+SELECT 
+    CASE 
+        WHEN mk.MakeCountry IN ('France', 'Germany', 'Italy', 'Spain', 'Netherlands', 'Portugal', 'Austria', 'Belgium', 'Finland', 'Ireland', 'Luxembourg', 'Greece') THEN 'European'
+        WHEN mk.MakeCountry = 'United Kingdom' THEN 'British'
+        WHEN mk.MakeCountry IN ('United States', 'Canada', 'Mexico') THEN 'American'
+        ELSE 'Other'
+    END AS GeographicalZone,
+    COUNT(mk.MakeID) AS MakeCount
+FROM 
+    make mk
+GROUP BY 
+    GeographicalZone
+ORDER BY 
+    GeographicalZone;
 
 
 -- Question 37
@@ -529,12 +804,49 @@ select * from customers;
 -- 200000, Over 200000) and show how many vehicles have been sold in each category.
 -- Write an SQL query to create such a report.
 
+SELECT 
+    CASE
+        WHEN s.TotalSalePrice < 5000 THEN 'Under 5000'
+        WHEN s.TotalSalePrice BETWEEN 5000 AND 50000 THEN '5000-50000'
+        WHEN s.TotalSalePrice BETWEEN 50001 AND 100000 THEN '50001-100000'
+        WHEN s.TotalSalePrice BETWEEN 100001 AND 200000 THEN '100001-200000'
+        ELSE 'Over 200000'
+    END AS SaleValueBand,
+    COUNT(s.SalesID) AS VehiclesSold
+FROM 
+    sales s
+GROUP BY 
+    SaleValueBand
+ORDER BY 
+    CASE
+        WHEN SaleValueBand = 'Under 5000' THEN 1
+        WHEN SaleValueBand = '5000-50000' THEN 2
+        WHEN SaleValueBand = '50001-100000' THEN 3
+        WHEN SaleValueBand = '100001-200000' THEN 4
+        WHEN SaleValueBand = 'Over 200000' THEN 5
+        ELSE 6
+    END;
 
 
 -- Question 38
 -- The sales director wants to make it clear in which season a vehicle is sold. The seasons
 -- are: Winter (Nov - Feb), Spring (Mar, Apr), Summer (May, Jun, Jul, Aug), and Autumn
 -- (Sept, Oct). Create a report showing the month number, sale date, and the sale season.
+
+SELECT 
+    MONTH(s.SaleDate) AS MonthNumber,
+    s.SaleDate AS SaleDate,
+    CASE
+        WHEN MONTH(s.SaleDate) IN (11, 12, 1, 2) THEN 'Winter'
+        WHEN MONTH(s.SaleDate) IN (3, 4) THEN 'Spring'
+        WHEN MONTH(s.SaleDate) IN (5, 6, 7, 8) THEN 'Summer'
+        WHEN MONTH(s.SaleDate) IN (9, 10) THEN 'Autumn'
+        ELSE 'Unknown'
+    END AS SaleSeason
+FROM 
+    sales s
+ORDER BY 
+    s.SaleDate;
 
 
 -- Question 39
@@ -543,18 +855,61 @@ select * from customers;
 -- query without using any window functions.
 
 
+SELECT 
+    st.Color AS VehicleColor,
+    COUNT(sd.SalesID) AS VehiclesSold,
+    SUM(sd.SalePrice) AS TotalSalesValue,
+    (SUM(sd.SalePrice) / (SELECT SUM(sd2.SalePrice) FROM salesdetails sd2) * 100) AS PercentageOfTotalSales
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+GROUP BY 
+    st.Color
+ORDER BY 
+    TotalSalesValue DESC;
+
+
 -- Question 40
 -- Suppose you are asked to show which colors sell the most. In addition, you also want to
 -- find the percentage of cars purchased by value for each color of vehicle. Write an SQL
 -- query to show this result set. Write the query without using any window functions.
+
+SELECT 
+    st.Color AS VehicleColor,
+    COUNT(sd.SalesID) AS VehiclesSold,
+    SUM(sd.SalePrice) AS TotalSalesValue,
+    (SUM(sd.SalePrice) / total_sales.TotalSalesValue * 100) AS PercentageOfTotalSales
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    (SELECT SUM(SalePrice) AS TotalSalesValue FROM salesdetails) total_sales
+GROUP BY 
+    st.Color
+ORDER BY 
+    TotalSalesValue DESC;
+
 
 
 -- Question 41
 -- The CEO requests a list of all the vehicle makes and models sold this year but not in
 -- the previous year. Write an SQL query to create this list. Write the query without using
 -- any window functions.
-
-
+SELECT 
+    st.Color AS VehicleColor,
+    COUNT(sd.SalesID) AS VehiclesSold,
+    SUM(sd.SalePrice) AS TotalSalesValue,
+    (SUM(sd.SalePrice) / (SELECT SUM(SalePrice) FROM salesdetails) * 100) AS PercentageOfTotalSales
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+GROUP BY 
+    st.Color
+ORDER BY 
+    TotalSalesValue DESC;
 
 -- Question 42
 -- The sales manager wants to see a list of all vehicles sold in 2017, with the percent-
@@ -562,6 +917,35 @@ select * from customers;
 -- average sales figure. Hint: To simplify writing this query, you can use a view named
 -- salesbycountry included in the database. You can use the view like the source table.
 -- Write the query without using any window functions.
+-- Step 1: Create a subquery to calculate the total sales and average sales for 2017
+
+SELECT 
+    st.StockCode AS VehicleID,
+    sd.SalePrice AS SalePrice,
+    (sd.SalePrice / annual_totals.TotalSalesValue * 100) AS PercentageOfTotalSales,
+    (sd.SalePrice - annual_totals.AverageSalesValue) AS SalesDeviation
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    sales s ON sd.SalesID = s.SalesID
+JOIN (
+    SELECT 
+        SUM(sd2.SalePrice) AS TotalSalesValue,
+        AVG(sd2.SalePrice) AS AverageSalesValue
+    FROM 
+        salesdetails sd2
+    JOIN 
+        sales s2 ON sd2.SalesID = s2.SalesID
+    WHERE 
+        YEAR(s2.SaleDate) = 2017
+) AS annual_totals
+WHERE 
+    YEAR(s.SaleDate) = 2017
+ORDER BY 
+    sd.SalePrice DESC;
+
 
 
 -- Question 43
@@ -569,12 +953,50 @@ select * from customers;
 -- sell best. At least that is what the CEO said when she requested a report showing sales
 -- for 2017 ranked in order of importance by make. Write an SQL query to generate this
 -- report.
+SELECT 
+    mk.MakeName AS VehicleMake,
+    mo.ModelName AS VehicleModel,
+    SUM(sd.SalePrice) AS TotalSales,
+    COUNT(sd.SalesID) AS UnitsSold
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model mo ON st.ModelID = mo.ModelID
+JOIN 
+    make mk ON mo.MakeID = mk.MakeID
+JOIN 
+    sales s ON sd.SalesID = s.SalesID
+WHERE 
+    YEAR(s.SaleDate) = 2017
+GROUP BY 
+    mk.MakeName, mo.ModelName
+ORDER BY 
+    TotalSales DESC, UnitsSold DESC;
 
 
 -- Question 44
 -- Buyer psychology is a peculiar thing. To better understand Prestige Cars’ clients, the
 -- sales director has decided that she wants to find the bestselling color for each make sold.
 -- Write an SQL query to create this list.
+SELECT 
+    mk.MakeName AS VehicleMake,
+    st.Color AS BestSellingColor,
+    COUNT(sd.SalesID) AS UnitsSold
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model mo ON st.ModelID = mo.ModelID
+JOIN 
+    make mk ON mo.MakeID = mk.MakeID
+GROUP BY 
+    mk.MakeName, st.Color
+ORDER BY 
+    mk.MakeName, UnitsSold DESC;
+
 
 -- Question 45
 -- Prestige Cars caters to a wide range of clients, and the sales director does not want to
@@ -583,11 +1005,74 @@ select * from customers;
 -- sales. Her exact request is this “Find the sales details for the top three selling makes in
 -- the second 20% of sales.” Write an SQL query to create this result set.
 
+WITH CustomerSales AS (
+    SELECT 
+        s.CustomerID,
+        SUM(sd.SalePrice) AS TotalCustomerSales
+    FROM 
+        sales s
+    JOIN 
+        salesdetails sd ON s.SalesID = sd.SalesID
+    GROUP BY 
+        s.CustomerID
+),
+RankedCustomers AS (
+    SELECT 
+        *,
+        NTILE(5) OVER (ORDER BY TotalCustomerSales DESC) AS Quintile
+    FROM 
+        CustomerSales
+)
+SELECT 
+    mk.MakeName AS VehicleMake,
+    sd.SalePrice,
+    st.Color
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model mo ON st.ModelID = mo.ModelID
+JOIN 
+    make mk ON mo.MakeID = mk.MakeID
+JOIN 
+    sales s ON sd.SalesID = s.SalesID
+JOIN 
+    RankedCustomers rc ON s.CustomerID = rc.CustomerID
+WHERE 
+    rc.Quintile = 2
+ORDER BY 
+    mk.MakeName, sd.SalePrice DESC
+LIMIT 3;
+
 
 -- Question 46
 -- The CEO is interested in analyzing key metrics over time. Her latest request is that you
 -- obtain the total sales to each date and then display the running total of sales by value
 -- for each year. Write an SQL query to fulfill her request.
+WITH DailySales AS (
+    SELECT 
+        DATE(s.SaleDate) AS SaleDate,
+        SUM(sd.SalePrice) AS TotalSales
+    FROM 
+        sales s
+    JOIN 
+        salesdetails sd ON s.SalesID = sd.SalesID
+    GROUP BY 
+        DATE(s.SaleDate)
+)
+SELECT 
+    YEAR(SaleDate) AS Year,
+    SaleDate,
+    TotalSales,
+    (SELECT SUM(TotalSales) 
+     FROM DailySales ds2 
+     WHERE ds2.SaleDate <= ds.SaleDate 
+       AND YEAR(ds2.SaleDate) = YEAR(ds.SaleDate)) AS RunningTotal
+FROM 
+    DailySales ds
+ORDER BY 
+    Year, SaleDate;
 
 
 -- Question 47
@@ -596,11 +1081,53 @@ select * from customers;
 -- is for a report that shows both the first order and the last four sales for each customer.
 -- Write an SQL query to generate this result set.
 
+WITH RankedSales AS (
+    SELECT 
+        s.CustomerID,
+        sd.SalesID,
+        s.SaleDate,
+        ROW_NUMBER() OVER (PARTITION BY s.CustomerID ORDER BY s.SaleDate ASC) AS SaleRank,
+        RANK() OVER (PARTITION BY s.CustomerID ORDER BY s.SaleDate DESC) AS ReverseRank
+    FROM 
+        sales s
+    JOIN 
+        salesdetails sd ON s.SalesID = sd.SalesID
+)
+SELECT 
+    CustomerID,
+    SalesID,
+    SaleDate,
+    CASE 
+        WHEN SaleRank = 1 THEN 'First Order'
+        WHEN ReverseRank <= 4 THEN 'Last Four Sales'
+    END AS SaleType
+FROM 
+    RankedSales
+WHERE 
+    SaleRank = 1 OR ReverseRank <= 4
+ORDER BY 
+    CustomerID, SaleDate;
+
 
 -- Question 48
 -- The sales manager is on a mission to find out if certain weekdays are better for sales
 -- than others. Write a query so that she can analyze sales for each day of the week (but
 -- not weekends) in 2017 where there was a sale.
+SELECT 
+    DAYNAME(s.SaleDate) AS Weekday,
+    COUNT(sd.SalesID) AS TotalSales,
+    SUM(sd.SalePrice) AS TotalSalesValue
+FROM 
+    sales s
+JOIN 
+    salesdetails sd ON s.SalesID = sd.SalesID
+WHERE 
+    YEAR(s.SaleDate) = 2017
+    AND DAYOFWEEK(s.SaleDate) BETWEEN 2 AND 6
+GROUP BY 
+    Weekday
+ORDER BY 
+    TotalSalesValue DESC;
 
 
 -- Question 49
@@ -609,6 +1136,35 @@ select * from customers;
 -- So, the senior management wants more. The sales manager wants you find the top five
 -- vehicles sold by value (meaning, sale price) in the color of the most expensive car sold.
 -- Write a query to generate this list.
+WITH MostExpensiveColor AS (
+    SELECT 
+        st.Color
+    FROM 
+        salesdetails sd
+    JOIN 
+        stock st ON sd.StockID = st.StockCode
+    ORDER BY 
+        sd.SalePrice DESC
+    LIMIT 1
+)
+SELECT 
+    mk.MakeName,
+    mo.ModelName,
+    st.Color,
+    sd.SalePrice
+FROM 
+    salesdetails sd
+JOIN 
+    stock st ON sd.StockID = st.StockCode
+JOIN 
+    model mo ON st.ModelID = mo.ModelID
+JOIN 
+    make mk ON mo.MakeID = mk.MakeID
+WHERE 
+    st.Color = (SELECT Color FROM MostExpensiveColor)
+ORDER BY 
+    sd.SalePrice DESC
+LIMIT 5;
 
 
 -- Question 50
@@ -616,7 +1172,40 @@ select * from customers;
 -- SalePrice) but also wants to get an idea of the percentile in the sale hierarchy for each
 -- vehicle sold. Write the SQL query to deliver exactly this.
 -- 8
-
+WITH CountrySales AS (
+    SELECT 
+        co.CountryName,
+        s.SalesID,
+        SUM(sd.SalePrice) AS TotalSalePrice
+    FROM 
+        sales s
+    JOIN 
+        salesdetails sd ON s.SalesID = sd.SalesID
+    JOIN 
+        customer cu ON s.CustomerID = cu.CustomerID
+    JOIN 
+        country co ON cu.Country = co.Countryiso2 -- Adjust this to match your schema
+    GROUP BY 
+        co.CountryName, s.SalesID
+),
+RankedSales AS (
+    SELECT 
+        cs.CountryName,
+        cs.SalesID,
+        cs.TotalSalePrice,
+        NTILE(100) OVER (PARTITION BY cs.CountryName ORDER BY cs.TotalSalePrice DESC) AS Percentile
+    FROM 
+        CountrySales cs
+)
+SELECT 
+    CountryName,
+    SalesID,
+    TotalSalePrice,
+    Percentile
+FROM 
+    RankedSales
+ORDER BY 
+    CountryName, Percentile;
 
 -- COLONIAL DATABASE
 -- Question 1
