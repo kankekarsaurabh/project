@@ -176,19 +176,19 @@
 # summer_69([4, 5, 6, 7, 8, 9]) --> 9
 # summer_69([2, 1, 6, 9, 11]) --> 14
 
-def six(a):
-    sum=0
-    for i in range(len(a)):
-        sum=i+sum
-        if a[i] == 6:
-            i+=1
-            if a[i]==9:
-                print(i)
-                return True
+# def six(a):
+#     sum=0
+#     for i in range(len(a)):
+#         sum=i+sum
+#         if a[i] == 6:
+#             i+=1
+#             if a[i]==9:
+#                 print(i)
+#                 return True
 
-array=[1,3,5]
-result= six(array)
-print(result)
+# array=[1,3,5]
+# result= six(array)
+# print(result)
 
 
 
@@ -207,6 +207,11 @@ print(result)
 # By convention, 0 and 1 are not prime.
 
 
+def prime(number):
+
+
+n=int(input("Enter a number"))
+result= n()
 # 10) Just for fun:
 
 # PRINT BIG: Write a function that takes in a single letter, and returns a 5x5 representation of that letter
