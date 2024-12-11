@@ -207,29 +207,29 @@
 # By convention, 0 and 1 are not prime.
 
 
-def is_prime(n):
-    # Step 1: Handle numbers less than or equal to 1
-    if n <= 1:
-        return False  # Numbers <= 1 are not prime
+# def is_prime(n):
+#     # Step 1: Handle numbers less than or equal to 1
+#     if n <= 1:
+#         return False  # Numbers <= 1 are not prime
     
-    # Step 2: Handle 2 separately (it's the only even prime number)
-    if n == 2:
-        return True
+#     # Step 2: Handle 2 separately (it's the only even prime number)
+#     if n == 2:
+#         return True
     
-    # Step 3: Eliminate all other even numbers
-    if n % 2 == 0:
-        return False  # Even numbers > 2 are not prime
+#     # Step 3: Eliminate all other even numbers
+#     if n % 2 == 0:
+#         return False  # Even numbers > 2 are not prime
     
-    # Step 4: Check divisors from 3 to sqrt(n)
-    for i in range(3, int(n ** 0.5) + 1, 2):  # Step by 2 to check only odd numbers
-        if n % i == 0:  # If divisible, not prime
-            return False
+#     # Step 4: Check divisors from 3 to sqrt(n)
+#     for i in range(3, int(n ** 0.5) + 1, 2):  # Step by 2 to check only odd numbers
+#         if n % i == 0:  # If divisible, not prime
+#             return False
     
-    # Step 5: If no divisors are found, the number is prime
-    return True
-n= int(input("Enetr a number"))
-result= is_prime(n)
-print(result)
+#     # Step 5: If no divisors are found, the number is prime
+#     return True
+# n= int(input("Enetr a number"))
+# result= is_prime(n)
+# print(result)
 # 10) Just for fun:
 
 # PRINT BIG: Write a function that takes in a single letter, and returns a 5x5 representation of that letter
@@ -242,3 +242,15 @@ print(result)
 #      *   *
 # HINT: Consider making a dictionary of possible patterns, and mapping the alphabet to specific 5-line combinations of patterns.
 # For purposes of this exercise, it's ok if your dictionary stops at "E
+
+
+
+
+def longest_word(sentence):
+    # Your code here
+    pass
+print(longest_word("The quick brown fox jumped over the lazy dog"))  # Output: "jumped"
+
+s=input("test i am back")
+result= longest_word(s)
+print(result)
