@@ -176,19 +176,21 @@
 # summer_69([4, 5, 6, 7, 8, 9]) --> 9
 # summer_69([2, 1, 6, 9, 11]) --> 14
 
-def six(a):
-    sum=0
-    for i in range(len(a)):
-        sum=i+sum
-        if a[i] == 6:
-            i+=1
-            if a[i]==9:
-                print(i)
-                return True
 
-array=[1,3,5]
-result= six(array)
-print(result)
+#Need to fix
+# def six(a):
+#     sum=0
+#     for i in range(len(a)):
+#         sum=i+sum
+#         if a[i] == 6:
+#             i+=1
+#             if a[i]==9:
+#                 print(i)
+#                 return True
+
+# array=[1,3,5]
+# result= six(array)
+# print(result)
 
 
 
@@ -205,6 +207,8 @@ print(result)
 
 # count_primes(100) --> 25
 # By convention, 0 and 1 are not prime.
+
+    
 
 
 # 10) Just for fun:
