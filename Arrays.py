@@ -68,5 +68,4 @@
 n=[2,4,5,6,9]
 largest=n[0]
 for i in (n):
-    if i>largest:
-        largest=i
+    
