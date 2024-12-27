@@ -65,10 +65,11 @@
 
 # Output:  6
 
-n=[2,4,5,6,9]
-n=[2,4,5,6,9]
-largest=n[0]
-for i in (n):
-    #test
-    
-    
+n = [2, 10, 5, 6, 9]
+largest = n[0]
+for i in n:
+    if i > largest:  # Add a conditional check
+        largest = i
+
+print(largest)
+
