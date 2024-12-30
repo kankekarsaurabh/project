@@ -1,2 +1,3 @@
 # DSA practice
 
+new array
