@@ -1,6 +1,6 @@
-<<<<<<< HEAD
-# DSA practice
-=======
+# <<<<<<< HEAD
+# # DSA practice
+# =======
 # #Arrays
 # # 
 # # 
@@ -68,13 +68,94 @@
 
 # Output:  6
 
-n = [2, 10, 5, 6, 9]
-largest = n[0]
-for i in n:
-    if i > largest:  # Add a conditional check
-        largest = i
+# n = [2, 10, 5, 6, 9]
+# largest = n[0]
+# for i in n:
+#     if i > largest:  # Add a conditional check
+#         largest = i
 
-print(largest)
->>>>>>> origin/main
+# print(largest)
+# >>>>>>> origin/main
 
-new array
+# new array
+
+# n= [1,2,3,4,5]
+# split =4
+# if split in n:
+#     split_index=n.index(split)
+#     part1= n[:split_index]
+#     part2= n[split_index:]
+# else:
+#     part1=n
+#     part2=[]
+
+# part3= part2+part1
+# print(part3)
+
+#Count the number of bits
+# def countBits(a):
+#     count=0
+#     x=bin(a)
+#     print(x)
+#     for i in x:
+#         if i=='1':
+#             count=count+1
+#     return count
+
+
+      
+# n = int(input())
+# print(countBits(n))
+
+
+#total prime
+
+#Write your totalPrime function here.def isPrime(n):
+# from os import *
+# from sys import *
+# from collections import *
+# from math import *
+
+# def isPrime(n):
+#     if n<=1:
+#         return False
+#     for i in range(2,int(n**0.5)+1):
+#         if n%i==0:
+#             return False
+#     return True
+
+# def totalPrime(S,E):
+#      count=0
+#      for i in range(S,E):
+#          if isPrime(i):
+#             count=count+1
+#      return count
+         
+    
+# #Taking S and E space seperated input.
+# S,E = map(int,input().split(' '))
+# print(totalPrime(S,E))
+
+#DSA 251 Arrays : Rotate by k elements
+arr=[2, 4, 12, 4, 65, 43, 23, 44, 55, 23, 11, 87,23, 44, 2, 11, 42, 89, 76, 45, 32, 22, 56, 32, 41]
+k=int(12)
+def rotateArray(arr,k):
+    # Check if the value `k` exists in the array
+
+    position=k
+    
+    
+    
+    part1=arr[:position]
+    
+    part2=arr[position:]
+    
+    part3=part2+part1
+    
+    return part3
+
+
+
+print(rotateArray(arr,k))
+
+        
