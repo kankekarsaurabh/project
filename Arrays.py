@@ -137,25 +137,41 @@
 # print(totalPrime(S,E))
 
 #DSA 251 Arrays : Rotate by k elements
-arr=[2, 4, 12, 4, 65, 43, 23, 44, 55, 23, 11, 87,23, 44, 2, 11, 42, 89, 76, 45, 32, 22, 56, 32, 41]
-k=int(12)
-def rotateArray(arr,k):
-    # Check if the value `k` exists in the array
+# arr=[2, 4, 12, 4, 65, 43, 23, 44, 55, 23, 11, 87,23, 44, 2, 11, 42, 89, 76, 45, 32, 22, 56, 32, 41]
+# k=int(12)
+# def rotateArray(arr,k):
+#     # Check if the value `k` exists in the array
 
-    position=k
+#     position=k
     
     
     
-    part1=arr[:position]
+#     part1=arr[:position]
     
-    part2=arr[position:]
+#     part2=arr[position:]
     
-    part3=part2+part1
+#     part3=part2+part1
     
-    return part3
+#     return part3
 
 
 
-print(rotateArray(arr,k))
+# print(rotateArray(arr,k))
 
-        
+arr=[-71,-46,-41, -8, 7, 35, 219, -150, 57, 59]
+def isPossible(arr):
+    count=0
+    for i in range(len(arr)-2):
+        if arr[i]>arr[i+1]:
+            count=count+1
+            if count>1:
+                return False
+            if i>0 and arr[i-1]>arr[i+1]:
+                arr[i+1]=arr[i]
+                print(arr[i+1])
+                print(arr[i])
+    return False
+    
+
+
+print(isPossible(arr))
