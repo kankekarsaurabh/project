@@ -158,20 +158,55 @@
 
 # print(rotateArray(arr,k))
 
-arr=[-71,-46,-41, -8, 7, 35, 219, -150, 57, 59]
-def isPossible(arr):
-    count=0
-    for i in range(len(arr)-2):
-        if arr[i]>arr[i+1]:
-            count=count+1
-            if count>1:
-                return False
-            if i>0 and arr[i-1]>arr[i+1]:
-                arr[i+1]=arr[i]
-                print(arr[i+1])
-                print(arr[i])
-    return False
+
+#non decreasing arry
+# arr=[-71,-46,-41, -8, 7, 35, 219, -150, 57, 59]
+# def isPossible(arr):
+#     count=0
+#     for i in range(len(arr)-2):
+#         if arr[i]>arr[i+1]:
+#             count=count+1
+#             if count>1:
+#                 return False
+#             if i>0 and arr[i-1]>arr[i+1]:
+#                 arr[i+1]=arr[i]
+#                 print(arr[i+1])
+#                 print(arr[i])
+#     return False
     
 
 
-print(isPossible(arr))
+# print(isPossible(arr))
+
+
+
+#find first missing positive integer
+
+arr=[3 ,2 ,-6, 1, 0,5]
+array=[]
+
+def firstMissing(arr):
+    # Write your function here.
+    arr.sort()
+    for i in range(len(arr)):
+
+        if i>0:
+            array.append(arr[i])
+        
+    
+    for i in range(len(array)):
+
+        if i>0 and  array[i]==i+1:
+            print(i)
+
+
+
+   
+
+
+    
+
+# Main Code
+ans = firstMissing(arr)
+
+print(ans)
