@@ -192,12 +192,14 @@ def firstMissing(arr):
 
         if i>0:
             array.append(arr[i])
+
         
     
     for i in range(len(array)):
 
         if i>0 and  array[i]==i+1:
             print(i)
+            print(i+1)
 
 
 
